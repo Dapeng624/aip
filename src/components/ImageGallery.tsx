@@ -19,12 +19,12 @@ export function ImageGallery() {
             Explore what your prompts can become
           </h2>
           <p className="mt-4 text-lg leading-8 text-slate-500">
-            A masonry-style grid of generated examples, ready to be replaced by
-            a real image generation API in the next phase.
+            Browse sample outputs across portraits, product shots, fantasy
+            scenes, and cinematic environments.
           </p>
         </div>
 
-        <div className="columns-2 gap-5 md:columns-3 lg:columns-4">
+        <div className="columns-1 gap-5 sm:columns-2 md:columns-3 lg:columns-4">
           {sampleImages.map((image) => (
             <ImageCard image={image} key={image.id} onClick={setSelected} />
           ))}

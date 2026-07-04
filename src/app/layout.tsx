@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
   ),
-  title: "Raphael Clone - Free AI Image Generator",
+  title: "Raphael Clone - AI Image Generator",
   description:
-    "A pixel-inspired Raphael AI clone built as a MicroSaaS landing page practice project.",
+    "A polished Raphael-inspired AI image generator practice project.",
   openGraph: {
     title: "Raphael Clone",
-    description: "Free and unlimited AI image generator landing page clone.",
+    description: "A Raphael-inspired AI image generator interface.",
     images: ["/og-image.svg"]
   }
 };

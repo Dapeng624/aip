@@ -20,11 +20,11 @@ export function Lightbox({ image, onClose }: LightboxProps) {
       title={image?.prompt}
     >
       {image ? (
-        <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="grid max-h-[78vh] place-items-center overflow-auto bg-slate-950 p-4">
+        <div className="grid max-h-[calc(92vh-73px)] overflow-auto lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="grid max-h-[52vh] place-items-center overflow-auto bg-slate-950 p-4 sm:max-h-[64vh] lg:max-h-[78vh]">
             <Image
               alt={image.prompt}
-              className="max-h-[72vh] w-auto rounded-xl object-contain"
+              className="max-h-[46vh] w-auto rounded-xl object-contain sm:max-h-[58vh] lg:max-h-[72vh]"
               height={image.height}
               src={image.url}
               width={image.width}

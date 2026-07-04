@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const links = [
+  { href: "#create", label: "Create" },
   { href: "#gallery", label: "Gallery" },
-  { href: "#features", label: "Features" },
-  { href: "#faq", label: "FAQ" }
+  { href: "#features", label: "Features" }
 ];
 
 export function Navbar() {
@@ -46,7 +46,9 @@ export function Navbar() {
         <div className="hidden items-center gap-2 md:flex">
           <Button
             aria-label="Open GitHub"
-            onClick={() => window.open("https://github.com", "_blank")}
+            onClick={() =>
+              window.open("https://github.com/Dapeng624/aip", "_blank")
+            }
             type="button"
             variant="icon"
           >
@@ -84,7 +86,7 @@ export function Navbar() {
           ))}
           <a
             className="rounded-xl px-3 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
-            href="https://github.com"
+            href="https://github.com/Dapeng624/aip"
             rel="noreferrer"
             target="_blank"
           >

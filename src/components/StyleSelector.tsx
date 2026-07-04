@@ -10,8 +10,19 @@ interface StyleSelectorProps {
 }
 
 export function StyleSelector({ value, onChange }: StyleSelectorProps) {
+  function moveSelection(direction: 1 | -1) {
+    const currentIndex = styles.indexOf(value);
+    const nextIndex =
+      (currentIndex + direction + styles.length) % styles.length;
+    onChange(styles[nextIndex]);
+  }
+
   return (
-    <div className="flex flex-wrap justify-center gap-2" role="radiogroup">
+    <div
+      aria-label="Image style"
+      className="flex flex-wrap justify-center gap-2"
+      role="radiogroup"
+    >
       {styles.map((style) => (
         <button
           aria-checked={value === style}
@@ -22,8 +33,19 @@ export function StyleSelector({ value, onChange }: StyleSelectorProps) {
               : "border-slate-200 bg-white/80 text-slate-600 hover:border-slate-300 hover:text-slate-950"
           )}
           key={style}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+              event.preventDefault();
+              moveSelection(1);
+            }
+            if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+              event.preventDefault();
+              moveSelection(-1);
+            }
+          }}
           onClick={() => onChange(style)}
           role="radio"
+          tabIndex={value === style ? 0 : -1}
           type="button"
         >
           {style}
