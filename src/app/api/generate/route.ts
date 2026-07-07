@@ -7,6 +7,11 @@ const replicate = new Replicate({
 
 const MODEL = "black-forest-labs/flux-schnell";
 
+interface ApiErrorResponse {
+  error: string;
+  status: number;
+}
+
 function toImageUrl(output: unknown) {
   const firstOutput = Array.isArray(output) ? output[0] : output;
 
@@ -20,6 +25,73 @@ function toImageUrl(output: unknown) {
   }
 
   return String(firstOutput);
+}
+
+function getErrorStatus(error: unknown) {
+  if (error && typeof error === "object" && "response" in error) {
+    const response = error.response;
+
+    if (
+      response &&
+      typeof response === "object" &&
+      "status" in response &&
+      typeof response.status === "number"
+    ) {
+      return response.status;
+    }
+  }
+
+  return undefined;
+}
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
+function getGenerateErrorResponse(error: unknown): ApiErrorResponse {
+  const status = getErrorStatus(error);
+  const message = getErrorMessage(error);
+
+  if (!process.env.REPLICATE_API_TOKEN) {
+    return {
+      error: "Server is missing the Replicate API token.",
+      status: 500
+    };
+  }
+
+  if (status === 401 || status === 403) {
+    return {
+      error: "Replicate API token is invalid or does not have access.",
+      status: 500
+    };
+  }
+
+  if (status === 402 || message.toLowerCase().includes("insufficient credit")) {
+    return {
+      error: "Replicate account has insufficient credit. Please add billing credit and try again.",
+      status: 402
+    };
+  }
+
+  if (status === 429) {
+    return {
+      error: "Replicate rate limit reached. Please wait a moment and try again.",
+      status: 429
+    };
+  }
+
+  if (message.toLowerCase().includes("fetch failed")) {
+    return {
+      error: "Could not connect to Replicate. Please check the server network connection.",
+      status: 502
+    };
+  }
+
+  return {
+    error: "Image generation failed. Please try a different prompt or try again later.",
+    status: 500
+  };
 }
 
 export async function POST(request: Request) {
@@ -51,10 +123,16 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ imageUrl });
   } catch (error) {
-    console.error("❌ 图片生成失败:", error);
+    const errorResponse = getGenerateErrorResponse(error);
+
+    console.error("❌ 图片生成失败:", {
+      status: errorResponse.status,
+      message: getErrorMessage(error)
+    });
+
     return NextResponse.json(
-      { error: "Failed to generate image" },
-      { status: 500 }
+      { error: errorResponse.error },
+      { status: errorResponse.status }
     );
   }
 }
