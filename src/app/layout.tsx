@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,7 +23,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Script id="tawk-to-widget" strategy="afterInteractive">
+          {`
+            var Tawk_API = Tawk_API || {};
+            var Tawk_LoadStart = new Date();
+            (function() {
+              var s1 = document.createElement("script");
+              var s0 = document.getElementsByTagName("script")[0];
+              s1.async = true;
+              s1.src = "https://embed.tawk.to/6a4c7781b357e01d43f69a5b/1jstb5kmg";
+              s1.charset = "UTF-8";
+              s1.setAttribute("crossorigin", "*");
+              s0.parentNode.insertBefore(s1, s0);
+            })();
+          `}
+        </Script>
+      </body>
     </html>
   );
 }
