@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StyleSelector } from "@/components/StyleSelector";
-import { type GalleryImage, sampleImages } from "@/data/gallery";
+import { type GalleryImage } from "@/data/gallery";
 
 const promptIdeas = [
   "A futuristic cyberpunk city at night",
@@ -16,7 +16,11 @@ const promptIdeas = [
   "A premium product photo of translucent headphones"
 ];
 
-export function PromptInput() {
+interface PromptInputProps {
+  onImageGenerated: (image: GalleryImage) => void;
+}
+
+export function PromptInput({ onImageGenerated }: PromptInputProps) {
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState("Realistic");
   const [loading, setLoading] = useState(false);
@@ -33,29 +37,56 @@ export function PromptInput() {
     setPrompt(value);
   }
 
-  function submit() {
+  async function submit() {
     const cleanPrompt = prompt.trim();
     if (!cleanPrompt || loading) return;
 
     setLoading(true);
     setLastPrompt(`${cleanPrompt} · ${style}`);
     setResult(null);
-    window.setTimeout(() => {
-      const imageIndex =
-        Array.from(cleanPrompt).reduce((sum, char) => sum + char.charCodeAt(0), 0) %
-        sampleImages.length;
-      setResult({
-        ...sampleImages[imageIndex],
-        prompt: cleanPrompt
+
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: `${cleanPrompt}, ${style} style`
+        })
       });
-      setLoading(false);
+
+      const data = await response.json();
+
+      if (!response.ok || data.error) {
+        alert(`生成失败：${data.error || "Failed to generate image"}`);
+        return;
+      }
+
+      const newImage: GalleryImage = {
+        id: Date.now().toString(),
+        url: data.imageUrl,
+        prompt: cleanPrompt,
+        width: 1024,
+        height: 1024
+      };
+
+      setResult(newImage);
+      onImageGenerated(newImage);
+      setPrompt("");
+      requestAnimationFrame(() => {
+        if (textareaRef.current) textareaRef.current.style.height = "auto";
+      });
       requestAnimationFrame(() => {
         resultRef.current?.scrollIntoView({
           behavior: "smooth",
           block: "nearest"
         });
       });
-    }, 1200);
+    } catch (error) {
+      console.error("Generate request failed:", error);
+      alert("网络错误，请检查后端是否启动");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

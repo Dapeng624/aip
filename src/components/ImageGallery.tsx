@@ -5,8 +5,13 @@ import { ImageCard } from "@/components/ImageCard";
 import { Lightbox } from "@/components/Lightbox";
 import { type GalleryImage, sampleImages } from "@/data/gallery";
 
-export function ImageGallery() {
+interface ImageGalleryProps {
+  generatedImages: GalleryImage[];
+}
+
+export function ImageGallery({ generatedImages }: ImageGalleryProps) {
   const [selected, setSelected] = useState<GalleryImage | null>(null);
+  const images = [...generatedImages, ...sampleImages];
 
   return (
     <section className="px-6 py-24" id="gallery">
@@ -25,7 +30,7 @@ export function ImageGallery() {
         </div>
 
         <div className="columns-1 gap-5 sm:columns-2 md:columns-3 lg:columns-4">
-          {sampleImages.map((image) => (
+          {images.map((image) => (
             <ImageCard image={image} key={image.id} onClick={setSelected} />
           ))}
         </div>

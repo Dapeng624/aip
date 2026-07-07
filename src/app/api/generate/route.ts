@@ -7,6 +7,21 @@ const replicate = new Replicate({
 
 const MODEL = "black-forest-labs/flux-schnell";
 
+function toImageUrl(output: unknown) {
+  const firstOutput = Array.isArray(output) ? output[0] : output;
+
+  if (
+    firstOutput &&
+    typeof firstOutput === "object" &&
+    "url" in firstOutput &&
+    typeof firstOutput.url === "function"
+  ) {
+    return firstOutput.url().toString();
+  }
+
+  return String(firstOutput);
+}
+
 export async function POST(request: Request) {
   try {
     const { prompt } = await request.json();
@@ -30,7 +45,7 @@ export async function POST(request: Request) {
       }
     });
 
-    const imageUrl = Array.isArray(output) ? output[0] : output;
+    const imageUrl = toImageUrl(output);
 
     console.log("✅ 图片生成成功:", imageUrl);
 

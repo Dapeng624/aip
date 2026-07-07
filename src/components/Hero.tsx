@@ -1,7 +1,12 @@
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { PromptInput } from "@/components/PromptInput";
+import { type GalleryImage } from "@/data/gallery";
 
-export function Hero() {
+interface HeroProps {
+  onImageGenerated: (image: GalleryImage) => void;
+}
+
+export function Hero({ onImageGenerated }: HeroProps) {
   return (
     <section
       className="relative overflow-hidden px-4 py-12 text-center sm:px-6 sm:py-16 lg:py-20"
@@ -42,7 +47,7 @@ export function Hero() {
         </div>
 
         <div className="mt-8 w-full sm:mt-10">
-          <PromptInput />
+          <PromptInput onImageGenerated={onImageGenerated} />
         </div>
       </div>
     </section>
